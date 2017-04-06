@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="js_shipment_frm" language="groovy" pageWidth="648" pageHeight="396" columnWidth="608" leftMargin="20" rightMargin="20" topMargin="10" bottomMargin="10">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="RECORD_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select o.documentno sonumber ,o.dateordered ,
+       bp.name as customer_name ,
+       bpl.phone customer_phone, bpl.fax customer_fax
+       , o.grandtotal, o.description remark
+       ---- Detail ----------
+       ,pd.name product_name
+       ,pd.value   product_code
+       ,ol.qtyentered
+       ,ol.linenetamt
+       ,ol.discount  discount_percent
+       ,ol.pricelist - ol.priceentered discount_amt
+       ,ol.priceentered
+       ,ol.pricelist
+       ,ol.priceactual
+       ,uom.name as uom
+from c_order o
+inner join c_bpartner bp on bp.c_bpartner_id = o.c_bpartner_id
+inner join c_bpartner_location bpl on bpl.c_bpartner_location_id = o.c_bpartner_location_id
+inner join c_location loc on bpl.c_location_id = loc.c_location_id
+inner join c_orderline ol on o.c_order_id = ol.c_order_id
+inner join c_uom uom on uom.c_uom_id = ol.c_uom_id
+left join m_product pd on pd.m_product_id = ol.m_product_id
+left join c_ordertax ot on o.c_order_id = ot.c_order_id
+where o.ISSOTRX='Y'
+AND o.DocStatus = 'CO'
+AND o.C_ORDER_ID = $P{RECORD_ID}
+ORDER BY o.DocumentNo DESC , ol.LINE]]>
+	</queryString>
+	<field name="sonumber" class="java.lang.String"/>
+	<field name="dateordered" class="java.sql.Timestamp"/>
+	<field name="customer_name" class="java.lang.String"/>
+	<field name="customer_phone" class="java.lang.String"/>
+	<field name="customer_fax" class="java.lang.String"/>
+	<field name="grandtotal" class="java.math.BigDecimal"/>
+	<field name="remark" class="java.lang.String"/>
+	<field name="product_name" class="java.lang.String"/>
+	<field name="product_code" class="java.lang.String"/>
+	<field name="qtyentered" class="java.math.BigDecimal"/>
+	<field name="linenetamt" class="java.math.BigDecimal"/>
+	<field name="discount_percent" class="java.math.BigDecimal"/>
+	<field name="discount_amt" class="java.math.BigDecimal"/>
+	<field name="priceentered" class="java.math.BigDecimal"/>
+	<field name="pricelist" class="java.math.BigDecimal"/>
+	<field name="priceactual" class="java.math.BigDecimal"/>
+	<field name="uom" class="java.lang.String"/>
+	<group name="sogroup">
+		<groupExpression><![CDATA[$F{sonumber}]]></groupExpression>
+	</group>
+	<background>
+		<band height="376" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="72" width="608" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="0" y="90" width="608" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="2" y="294" width="608" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="72" splitType="Stretch">
+			<staticText>
+				<reportElement x="5" y="40" width="19" height="16"/>
+				<textElement>
+					<font fontName="Cordia New" size="12" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[โทร]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="5" y="24" width="226" height="16"/>
+				<textElement>
+					<font fontName="Cordia New" size="12" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["\u0e40\u0e25\u0e02\u0e17\u0e35\u0e48 17 \u0e42\u0e0a\u0e04\u0e0a\u0e31\u0e22 4 \u0e0b\u0e2d\u0e22 54 \u0e41\u0e02\u0e27\u0e07 \u0e25\u0e32\u0e14\u0e1e\u0e23\u0e49\u0e32\u0e27 \u0e40\u0e02\u0e15 \u0e25\u0e32\u0e14\u0e1e\u0e23\u0e49\u0e32\u0e27  \u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e2f 10230"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="24" y="40" width="69" height="16"/>
+				<textElement>
+					<font fontName="Cordia New" size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["02-931-0054"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="5" y="0" width="226" height="24"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="18" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["\u0e23\u0e49\u0e32\u0e19\u0e40\u0e08\u0e23\u0e34\u0e0d\u0e2a\u0e42\u0e15\u0e23\u0e4c"]]></textFieldExpression>
+			</textField>
+			<rectangle radius="5">
+				<reportElement mode="Transparent" x="389" y="0" width="166" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="389" y="0" width="166" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="22" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[ใบขอซื้อ/ใบส่งสินค้า]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="425" y="40" width="68" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[เลขที่]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="497" y="40" width="56" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sonumber}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="497" y="53" width="56" height="19"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{dateordered}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="425" y="53" width="68" height="19"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="Cordia New" size="13" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[วันที่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="56" width="64" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[ผู้ซือ SOLD TO ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="54" width="164" height="18"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[": "+$F{customer_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="232" y="56" width="54" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[เบอร์ติดต่อ.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="286" y="56" width="144" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[": "+$F{customer_phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="432" y="25" width="61" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[หน้าที่]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="497" y="25" width="21" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="518" y="25" width="33" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="13"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" / " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="94" y="40" width="29" height="16"/>
+				<textElement>
+					<font fontName="Cordia New" size="12" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[มือถือ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="123" y="40" width="69" height="16"/>
+				<textElement>
+					<font fontName="Cordia New" size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["094-826-9442 , 084-879-6941"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="350" y="0" width="43" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Right">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[จำนวน]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="0" width="50" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[หน่วยละ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="104" y="0" width="240" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[รายละเอียดสินค้า]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="498" y="0" width="55" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[จำนวนเงิน]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="38" y="0" width="55" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[รหัสสินค้า]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="0" width="34" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[ลำดับ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="401" y="0" width="31" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement textAlignment="Right">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[หน่วย]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="497" y="0" width="52" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{linenetamt}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="48" y="0" width="45" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_code}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="445" y="0" width="45" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{priceentered}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="8" y="0" width="17" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{sogroup_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="108" y="0" width="236" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="350" y="0" width="36" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{qtyentered}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="396" y="0" width="43" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{uom}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="82" splitType="Stretch">
+			<staticText>
+				<reportElement x="332" y="56" width="149" height="16"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="13" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ผู้รับเงิน]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="108" y="56" width="149" height="16"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="13" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ผู้รับสินค้า]]></text>
+			</staticText>
+			<line>
+				<reportElement x="332" y="52" width="149" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="108" y="52" width="149" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="82">
+			<staticText>
+				<reportElement x="8" y="0" width="115" height="20"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement>
+					<font fontName="Cordia New" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[จำนวนเงินเป็นตัวอักษร:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="0" width="69" height="18"/>
+				<box topPadding="2" leftPadding="2"/>
+				<textElement>
+					<font fontName="Cordia New" size="14" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[ยอดเงินสุทธิ]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement x="123" y="0" width="283" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.pasta.util.jasper.Scriptlet.getAmtInWords($F{grandtotal}.setScale( 2, 2 ).toString())]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="108" y="52" width="149" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="108" y="56" width="149" height="16"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="13" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ผู้รับสินค้า]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="332" y="56" width="149" height="16"/>
+				<textElement textAlignment="Center">
+					<font fontName="Cordia New" size="13" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ผู้รับเงิน]]></text>
+			</staticText>
+			<line>
+				<reportElement x="332" y="52" width="149" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="497" y="0" width="52" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{grandtotal}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+</jasperReport>
