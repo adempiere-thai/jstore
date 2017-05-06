@@ -1,57 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="js_shipment_frm" language="groovy" pageWidth="648" pageHeight="396" columnWidth="608" leftMargin="20" rightMargin="20" topMargin="10" bottomMargin="10">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="js_bill_frm" language="groovy" pageWidth="648" pageHeight="396" columnWidth="608" leftMargin="20" rightMargin="20" topMargin="10" bottomMargin="10">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[select o.documentno sonumber ,o.dateordered ,
-       bp.name as customer_name ,
-       bpl.phone customer_phone, bpl.fax customer_fax
-       , o.grandtotal, o.description remark
-       ---- Detail ----------
-       ,pd.name product_name
-       ,pd.value   product_code
-       ,ol.qtyentered
-       ,ol.linenetamt
-       ,ol.discount  discount_percent
-       ,ol.pricelist - ol.priceentered discount_amt
-       ,ol.priceentered
-       ,ol.pricelist
-       ,ol.priceactual
-       ,uom.name as uom
-from c_order o
-inner join c_bpartner bp on bp.c_bpartner_id = o.c_bpartner_id
-inner join c_bpartner_location bpl on bpl.c_bpartner_location_id = o.c_bpartner_location_id
-inner join c_location loc on bpl.c_location_id = loc.c_location_id
-inner join c_orderline ol on o.c_order_id = ol.c_order_id
-inner join c_uom uom on uom.c_uom_id = ol.c_uom_id
-left join m_product pd on pd.m_product_id = ol.m_product_id
-left join c_ordertax ot on o.c_order_id = ot.c_order_id
-where o.ISSOTRX='Y'
-AND o.DocStatus = 'CO'
-AND o.C_ORDER_ID = $P{RECORD_ID}
-ORDER BY o.DocumentNo DESC , ol.LINE]]>
+		<![CDATA[SELECT DISTINCT iv.DocumentNo BILL_NO  , iv.DateInvoiced, bp.Name as CustomerName, od.Documentno as ORDER_NO , od.DateOrdered , od.GrandTotal as LineAmt, iv.GrandTotal
+FROM C_INVOICE iv
+INNER JOIN C_BPartner bp ON iv.C_BPartner_Id = bp.C_BPartner_Id
+INNER JOIN C_InvoiceLine ivl ON iv.C_Invoice_id = ivl.C_Invoice_Id
+INNER JOIN C_OrderLine ol ON ivl.C_OrderLine_Id = ol.C_OrderLine_ID
+INNER JOIN C_Order od ON od.C_Order_Id = ol.C_Order_Id
+WHERE iv.C_Invoice_ID = $P{RECORD_ID}]]>
 	</queryString>
-	<field name="sonumber" class="java.lang.String"/>
+	<field name="bill_no" class="java.lang.String"/>
+	<field name="dateinvoiced" class="java.sql.Timestamp"/>
+	<field name="customername" class="java.lang.String"/>
+	<field name="order_no" class="java.lang.String"/>
 	<field name="dateordered" class="java.sql.Timestamp"/>
-	<field name="customer_name" class="java.lang.String"/>
-	<field name="customer_phone" class="java.lang.String"/>
-	<field name="customer_fax" class="java.lang.String"/>
+	<field name="lineamt" class="java.math.BigDecimal"/>
 	<field name="grandtotal" class="java.math.BigDecimal"/>
-	<field name="remark" class="java.lang.String"/>
-	<field name="product_name" class="java.lang.String"/>
-	<field name="product_code" class="java.lang.String"/>
-	<field name="qtyentered" class="java.math.BigDecimal"/>
-	<field name="linenetamt" class="java.math.BigDecimal"/>
-	<field name="discount_percent" class="java.math.BigDecimal"/>
-	<field name="discount_amt" class="java.math.BigDecimal"/>
-	<field name="priceentered" class="java.math.BigDecimal"/>
-	<field name="pricelist" class="java.math.BigDecimal"/>
-	<field name="priceactual" class="java.math.BigDecimal"/>
-	<field name="uom" class="java.lang.String"/>
 	<group name="sogroup">
-		<groupExpression><![CDATA[$F{sonumber}]]></groupExpression>
+		<groupExpression><![CDATA[$F{bill_no}]]></groupExpression>
 	</group>
 	<background>
 		<band height="376" splitType="Stretch">
@@ -127,14 +97,14 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Cordia New" size="13" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{sonumber}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{bill_no}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="497" y="53" width="56" height="19"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Cordia New" size="13" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{dateordered}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{dateinvoiced}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="425" y="53" width="68" height="19"/>
@@ -155,21 +125,7 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[": "+$F{customer_name}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="232" y="56" width="54" height="16"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Cordia New" size="13" isBold="true" pdfEncoding="Identity-H"/>
-				</textElement>
-				<text><![CDATA[เบอร์ติดต่อ.]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="286" y="56" width="144" height="16"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Cordia New" size="13" pdfEncoding="Identity-H"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[": "+$F{customer_phone}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[": "+$F{customername}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="432" y="25" width="61" height="15"/>
@@ -211,31 +167,15 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="350" y="0" width="43" height="20"/>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement textAlignment="Right">
-					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
-				</textElement>
-				<text><![CDATA[จำนวน]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="444" y="0" width="50" height="20"/>
+				<reportElement x="250" y="0" width="182" height="20"/>
 				<box topPadding="2" leftPadding="2"/>
 				<textElement textAlignment="Center">
 					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
 				</textElement>
-				<text><![CDATA[หน่วยละ]]></text>
+				<text><![CDATA[วันที่ใบส่งของ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="104" y="0" width="240" height="20"/>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement textAlignment="Center">
-					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
-				</textElement>
-				<text><![CDATA[รายละเอียดสินค้า]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="498" y="0" width="55" height="20"/>
+				<reportElement x="468" y="0" width="85" height="20"/>
 				<box topPadding="2" leftPadding="2"/>
 				<textElement textAlignment="Center">
 					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
@@ -243,12 +183,12 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				<text><![CDATA[จำนวนเงิน]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="38" y="0" width="55" height="20"/>
+				<reportElement x="38" y="0" width="193" height="20"/>
 				<box topPadding="2" leftPadding="2"/>
 				<textElement textAlignment="Center">
 					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
 				</textElement>
-				<text><![CDATA[รหัสสินค้า]]></text>
+				<text><![CDATA[เลขที่ใบส่งของ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="0" width="34" height="20"/>
@@ -258,38 +198,23 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				</textElement>
 				<text><![CDATA[ลำดับ]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="401" y="0" width="31" height="20"/>
-				<box topPadding="2" leftPadding="2"/>
-				<textElement textAlignment="Right">
-					<font fontName="Cordia New" size="15" isBold="true" pdfEncoding="Identity-H"/>
-				</textElement>
-				<text><![CDATA[หน่วย]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="497" y="0" width="52" height="20"/>
+				<reportElement x="481" y="0" width="68" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{linenetamt}]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{lineamt}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="48" y="0" width="45" height="20"/>
+				<reportElement x="48" y="0" width="183" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_code}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="445" y="0" width="45" height="20"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{priceentered}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{order_no}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="8" y="0" width="17" height="20"/>
@@ -298,26 +223,12 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{sogroup_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="108" y="0" width="236" height="20"/>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="262" y="0" width="170" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_name}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0;-#,##0">
-				<reportElement x="350" y="0" width="36" height="20"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{qtyentered}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0;-#,##0">
-				<reportElement x="396" y="0" width="43" height="20"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Cordia New" size="14" pdfEncoding="Identity-H"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{uom}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{dateordered}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -330,21 +241,8 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				</textElement>
 				<text><![CDATA[ผู้รับเงิน]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="108" y="56" width="149" height="16"/>
-				<textElement textAlignment="Center">
-					<font fontName="Cordia New" size="13" isBold="false"/>
-				</textElement>
-				<text><![CDATA[ผู้รับสินค้า]]></text>
-			</staticText>
 			<line>
 				<reportElement x="332" y="52" width="149" height="1"/>
-				<graphicElement>
-					<pen lineStyle="Dotted"/>
-				</graphicElement>
-			</line>
-			<line>
-				<reportElement x="108" y="52" width="149" height="1"/>
 				<graphicElement>
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
@@ -376,19 +274,6 @@ ORDER BY o.DocumentNo DESC , ol.LINE]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.pasta.util.jasper.Scriptlet.getAmtInWords($F{grandtotal}.setScale( 2, 2 ).toString())]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="108" y="52" width="149" height="1"/>
-				<graphicElement>
-					<pen lineStyle="Dotted"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement x="108" y="56" width="149" height="16"/>
-				<textElement textAlignment="Center">
-					<font fontName="Cordia New" size="13" isBold="false"/>
-				</textElement>
-				<text><![CDATA[ผู้รับสินค้า]]></text>
-			</staticText>
 			<staticText>
 				<reportElement x="332" y="56" width="149" height="16"/>
 				<textElement textAlignment="Center">
